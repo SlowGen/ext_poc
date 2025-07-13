@@ -12,7 +12,7 @@
 			"runtimeExecutable": "${execPath}",
 			"args": ["--extensionDevelopmentPath=${workspaceRoot}"],
 			"outFiles": ["${workspaceFolder}/build/web/*.js"],
-			"preLaunchTask": "Flutter: run ext"
+			"preLaunchTask": "flutter: flutter build web"
 		}
 	]
 }

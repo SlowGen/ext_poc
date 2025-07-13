@@ -20,7 +20,7 @@
 		"Other"
 	],
 	"activationEvents": [],
-	"main": "./out/extension.js",
+	"main": "./build/web/main.dart.js",
 	"contributes": {
 		"views": {
 			"explorer": [
