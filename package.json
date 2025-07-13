@@ -1,0 +1,69 @@
+{
+	"name": "ext_poc",
+	"description": "VSCode extension POC",
+	"version": "0.0.1",
+	"publisher": "slowgen",
+	"private": true,
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/SlowGen/ext_poc"
+	},
+	"engines": {
+		"vscode": "^1.74.0"
+	},
+	"extensionKind": [
+		"ui",
+		"workspace"
+	],
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [],
+	"main": "./out/extension.js",
+	"contributes": {
+		"views": {
+			"explorer": [
+				{
+					"type": "webview",
+					"id": "extPoc.counter",
+					"name": "ext_poc",
+          "icon": "web/icons/Icon-192.png"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "extPoc.addOne",
+				"category": "Counter Button",
+				"title": "Add One"
+			},
+			{
+				"command": "extPoc.reset",
+				"category": "Counter Button",
+				"title": "Reset to zero",
+				"icon": "$(clear-all)"
+			}
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "extPoc.reset",
+					"group": "navigation",
+					"when": "view == extPoc.counter"
+				}
+			]
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "scripts/prepublish.sh"
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.13.0",
+		"@stylistic/eslint-plugin": "^2.9.0",
+		"@types/vscode": "^1.73.0",
+		"eslint": "^9.13.0",
+		"typescript": "^5.8.2",
+		"typescript-eslint": "^8.26.0"
+	}
+}
