@@ -12,7 +12,7 @@
 			"runtimeExecutable": "${execPath}",
 			"args": ["--extensionDevelopmentPath=${workspaceRoot}"],
 			"outFiles": ["${workspaceFolder}/build/web/*.js"],
-			"preLaunchTask": "flutter: flutter build web"
+			// "preLaunchTask": "flutter: flutter build web --wasm"
 		}
 	]
 }

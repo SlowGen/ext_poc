@@ -1,12 +1,16 @@
 {
 	"compilerOptions": {
+		"target": "es2018",
 		"module": "commonjs",
-		"target": "es2020",
-		"lib": ["es2020"],
+		"moduleResolution": "node",
+		"lib": ["es2018", "DOM", "DOM.Iterable"],
 		"outDir": "web",
-		"sourceMap": true,
+		"sourceMap": false,
 		"strict": true,
-		"rootDir": "typescript"
+		"rootDir": "typescript",
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"skipLibCheck": true
 	},
 	"exclude": ["node_modules", ".vscode-test"]
 }
