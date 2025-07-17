@@ -1,9 +1,23 @@
 import 'dart:js_interop';
 import 'package:web/web.dart';
+import 'dart:js_interop_unsafe';
+
+
+class Message {
+  final String type;
+  final int? value;
+
+  Message({required this.type, this.value});
+
+  factory Message.fromJsObject(JSObject jsObject) {
+    final type = (jsObject['type'] as JSString).toDart;
+    final value = jsObject['value'] != null ? (jsObject['value'] as JSNumber).toDartInt : null;
+    return Message(type: type, value: value);
+  }
+}
 
 @JS()
 external VsCode get vscode;
-
 @JS('acquireVsCodeApi')
 external VSCodeApi? acquireVsCodeApi();
 
@@ -35,13 +49,15 @@ class WebviewMessageHandler {
     window.addEventListener('message', (MessageEvent event) {
       try {
         final data = event.data;
-        if (data != null && _onMessage != null) {
-          // Convert JS object to Dart Map
-          final dartData = (data as JSObject).dartify() as Map<String, dynamic>;
-          _onMessage!(dartData);
+if (data != null && _onMessage != null) {
+try {
+            final message = Message.fromJsObject(data as JSObject);
+            _onMessage!({'type': message.type, 'value': message.value ?? 0});
+          } catch (e) {
+          }
+        } else {
         }
       } catch (e) {
-        print('Error handling message: $e');
       }
     }.toJS);
   }
