@@ -11,6 +11,6 @@
 		"strict": true
 	},
 	"exclude": [
-		"node_modules", "typescript", "out"
+		"node_modules", "out"
 	]
 }

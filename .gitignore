@@ -33,6 +33,7 @@ migrate_working_dir/
 .pub/
 /build/
 
+
 # Symbolication related
 app.*.symbols
 
@@ -55,3 +56,4 @@ tsconfig.lsif.json
 *.lsif
 *.db
 *.tsbuildinfo
+/out/
