@@ -1,4 +1,4 @@
 #!/bin/bash
 
-tsc --outDir web
-flutter build web
+tsc -p ./
+flutter build web --no-web-resources-cdn --csp --pwa-strategy none --no-tree-shake-icons

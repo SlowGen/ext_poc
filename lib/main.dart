@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  // instantiate vscode
-
   runApp(const MyApp());
 }
 

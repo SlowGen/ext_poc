@@ -10,27 +10,41 @@
 		"url": "https://github.com/SlowGen/ext_poc"
 	},
 	"engines": {
-		"vscode": "^1.74.0"
+		"vscode": "^1.75.0"
 	},
 	"extensionKind": [
-		"ui",
 		"workspace"
 	],
 	"categories": [
 		"Other"
 	],
-	"activationEvents": [],
-	"main": "./build/web/extension.js",
+	"activationEvents": [
+	],
+	"main": "./out/extension.js",
+	"files": [
+		"out",
+		"build/web"
+	],
 	"contributes": {
-		"views": {
-			"explorer": [
+		"viewsContainers": {
+			"activitybar": [
 				{
-					"type": "webview",
-					"id": "extPoc.counter",
-					"name": "ext_poc",
-					"icon": "web/icons/Icon-192.png"
+					"id": "ext-poc-sidebar",
+					"title": "Flutter POC",
+					"icon": "$(flutter)"
 				}
 			]
+		},
+		"views": {
+			"ext-poc-sidebar": [
+				{
+					"type": "webview",
+					"icon": "web/icons/Icon-192.png",
+					"id": "extPoc.counter",
+					"name": "Flutter Counter"
+				}
+			]
+
 		},
 		"commands": [
 			{
@@ -56,15 +70,18 @@
 		}
 	},
 	"scripts": {
-		"vscode:prepublish": "scripts/prepublish.sh"
+		"vscode:prepublish": "npm run compile",
+		"compile": "scripts/compile.sh",
+		"watch": "tsc -watch -p ./"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.13.0",
 		"@stylistic/eslint-plugin": "^2.9.0",
+		"@types/node": "^24.0.14",
 		"@types/vscode": "^1.73.0",
+		"@vscode/wasm-component-model": "^1.0.2",
 		"eslint": "^9.13.0",
 		"typescript": "^5.8.2",
-		"typescript-eslint": "^8.26.0",
-		"@vscode/wasm-component-model": "^1.0.2"
+		"typescript-eslint": "^8.26.0"
 	}
 }

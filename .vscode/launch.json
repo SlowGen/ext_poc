@@ -10,9 +10,12 @@
 			"type": "extensionHost",
 			"request": "launch",
 			"runtimeExecutable": "${execPath}",
-			"args": ["--extensionDevelopmentPath=${workspaceRoot}"],
+			"args": [
+				"--extensionDevelopmentPath=${workspaceRoot}",
+				"--disable-extensions",
+		],
 			"outFiles": ["${workspaceFolder}/build/web/*.js"],
-			// "preLaunchTask": "flutter: flutter build web --wasm"
+			"preLaunchTask": "npm: vscode:prepublish"
 		}
 	]
 }
