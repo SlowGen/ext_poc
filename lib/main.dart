@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'vscode/vscode_interop.dart';
 
 void main() {
   runApp(const MyApp());
@@ -7,7 +8,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -30,10 +30,49 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  late final WebviewMessageHandler _messageHandler;
+
+  @override
+  void initState() {
+    super.initState();
+    _messageHandler = WebviewMessageHandler();
+
+    // Set up message handlers
+    _messageHandler.setMessageHandler((message) {
+      final messageType = message['type'] as String?;
+      
+      switch (messageType) {
+        case 'add':
+          _incrementCounter();
+          break;
+        case 'reset':
+          _resetCounter();
+          break;
+      }
+    });
+
+    // Send initial counter value
+    _updateCounterInVsCode();
+  }
 
   void _incrementCounter() {
     setState(() {
       _counter++;
+    });
+    _updateCounterInVsCode();
+  }
+
+  void _resetCounter() {
+    setState(() {
+      _counter = 0;
+    });
+    _updateCounterInVsCode();
+  }
+
+  void _updateCounterInVsCode() {
+    _messageHandler.sendMessage({
+      'type': 'counterUpdate',
+      'value': _counter
     });
   }
 

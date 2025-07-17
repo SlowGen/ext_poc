@@ -2,6 +2,11 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 
+// expose the vscode lib so Flutter can see and use it
+// @ts-ignore
+globalThis.vscode = vscode;
+
+
 export function activate(context: vscode.ExtensionContext) {
 
     const provider = new FlutterWebviewProvider(context.extensionUri);
@@ -11,6 +16,9 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(FlutterWebviewProvider.viewType, provider)
 	);
+
+    // Add the status bar item to subscriptions for proper cleanup
+    context.subscriptions.push(provider.statusBarItem);
 
     // Register the commands defined in package.json
     context.subscriptions.push(vscode.commands.registerCommand('extPoc.addOne', () => {
@@ -32,10 +40,21 @@ class FlutterWebviewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'extPoc.counter';
 
     public view?: vscode.WebviewView;
+    private _statusBarItem: vscode.StatusBarItem;
 
     constructor(
         private readonly _extensionUri: vscode.Uri,
-    ) { }
+    ) {
+        // Create status bar item
+        this._statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+        this._statusBarItem.text = "$(symbol-number) Counter: 0";
+        this._statusBarItem.tooltip = "Flutter Counter Value";
+        this._statusBarItem.show();
+    }
+
+    public get statusBarItem(): vscode.StatusBarItem {
+        return this._statusBarItem;
+    }
 
     public resolveWebviewView(
         webviewView: vscode.WebviewView,
@@ -60,14 +79,23 @@ class FlutterWebviewProvider implements vscode.WebviewViewProvider {
             switch (data.type) {
                 case 'resetCounter':
                     vscode.window.showInformationMessage(`Flutter app says: "Resetting counter." Old value was: ${data.value}`);
+                    this._updateStatusBar(data.value || 0);
+                    break;
+                case 'counterUpdate':
+                    this._updateStatusBar(data.value);
                     break;
             }
         });
     }
 
+    private _updateStatusBar(value: number): void {
+        this._statusBarItem.text = `$(symbol-number) Counter: ${value}`;
+        this._statusBarItem.tooltip = `Flutter Counter Value: ${value}`;
+    }
+
     _getHtml(webview: vscode.Webview): string {
 		const webviewUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "build", "web"));
-        
+
         console.log('webviewUri', webviewUri);
 
         // Read the built index.html file
@@ -84,7 +112,7 @@ class FlutterWebviewProvider implements vscode.WebviewViewProvider {
         // Replace the base href with the webview URI
         // The built index.html will have <base href="/"> instead of $FLUTTER_BASE_HREF
         indexHtml = indexHtml.replace('<base href="/">', `<base href="${webviewUri}/">`);
-        
+
         console.log('Modified index.html for webview');
         return indexHtml;
     }
