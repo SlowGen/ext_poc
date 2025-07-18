@@ -1,0 +1,105 @@
+import 'dart:js_interop';
+import 'package:web/web.dart';
+import 'dart:js_interop_unsafe';
+
+// this is supplied by vscode in order to securely access their api
+@JS('acquireVsCodeApi')
+external VSCodeApi? acquireVsCodeApi();
+
+extension type VSCodeApi(JSObject _) implements JSObject {
+  external void postMessage(JSObject message);
+}
+
+class WebviewMessageHandler {
+  late final VSCodeApi? _vscodeApi;
+  Function(Message)? _onMessage;
+
+  WebviewMessageHandler() {
+    try {
+      _vscodeApi = acquireVsCodeApi();
+      _setupMessageListener();
+    } catch (e) {
+      print('missing vscode');
+    }
+  }
+
+  void messageHandler(MessageEvent event) {
+    try {
+      final data = event.data;
+      if (data.isDefinedAndNotNull) {
+        try {
+          final message = Message.fromJsObject(data as JSObject);
+          _onMessage?.call(message);
+        } catch (e) {
+          // unexpected message coming through
+          throw Error();
+        }
+      }
+    } catch (e) {
+      print('receive message failed');
+    }
+  }
+
+  void _setupMessageListener() {
+    print('setup listener method');
+    window.addEventListener('message', messageHandler.toJS);
+    print('listener method setup');
+  }
+
+  void setMessageHandler(Function(Message) handler) {
+    _onMessage = handler;
+  }
+
+  void dispose() {
+    window.removeEventListener('message', messageHandler.toJS);
+  }
+
+  void sendMessage(Message message) {
+    final api = _vscodeApi;
+    if (api == null) throw Error();
+
+    print('sending message type: ${message.type} value: ${message.value}');
+
+    // .toJsMessage is our custom extension to convert
+    final jsMessage = message.toJsMessage();
+
+    if (jsMessage.isDefinedAndNotNull) {
+      api.postMessage(jsMessage);
+    }
+  }
+}
+
+class Message {
+  final String type;
+  final int value;
+
+  Message({required this.type, this.value = 0});
+
+  factory Message.fromJsObject(JSObject jsObject) {
+    try {
+      final typeJs = jsObject['type'];
+      final valueJs = jsObject['value'];
+
+      final type = typeJs.isDefinedAndNotNull
+          ? (typeJs as JSString).toDart
+          : '';
+      final value = valueJs.isDefinedAndNotNull
+          ? (valueJs as JSNumber).toDartInt
+          : 0;
+
+      return Message(type: type, value: value);
+    } catch (e) {
+      print('inside message factory');
+    }
+    throw Error();
+  }
+}
+
+extension JSMessage on Message {
+  JSObject toJsMessage() {
+    final jsObject = JSObject();
+    jsObject.setProperty('type'.toJS, type.toJS);
+    jsObject.setProperty('value'.toJS, value.toJS);
+    return jsObject;
+  }
+}
