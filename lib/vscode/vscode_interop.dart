@@ -12,55 +12,56 @@ extension type VSCodeApi(JSObject _) implements JSObject {
 
 class WebviewMessageHandler {
   late final VSCodeApi? _vscodeApi;
-  Function(Map<String, dynamic>)? _onMessage;
+  Function(Message)? _onMessage;
 
   WebviewMessageHandler() {
     _vscodeApi = acquireVsCodeApi();
     _setupMessageListener();
   }
 
-  void _setupMessageListener() {
-    window.addEventListener(
-      'message',
-      (MessageEvent event) {
+  void messageHandler(MessageEvent event) {
+    try {
+      final data = event.data;
+      if (data.isDefinedAndNotNull) {
         try {
-          final data = event.data;
-          if (data.isDefinedAndNotNull) {
-            final handler = _onMessage;
-            if (handler != null) {
-              try {
-                final message = Message.fromJsObject(data as JSObject);
-                handler({'type': message.type, 'value': message.value ?? 0});
-              } catch (e) {
-                // Handle conversion errors silently
-              }
-            }
-          }
-        } catch (e) {}
-      }.toJS,
-    );
+          final message = Message.fromJsObject(data as JSObject);
+          _onMessage ?? _onMessage!(message);
+        } catch (e) {
+          // unexpected message coming through
+          throw Error();
+        }
+      }
+    } catch (e) {
+      print('receive message failed');
+    }
   }
 
-  void setMessageHandler(Function(Map<String, dynamic>) handler) {
+  void _setupMessageListener() {
+    window.addEventListener('message', messageHandler.toJS);
+  }
+
+  void setMessageHandler(Function(Message) handler) {
     _onMessage = handler;
   }
 
-  void sendMessage(Map<String, dynamic> message) {
+  void sendMessage(Message message) {
     final api = _vscodeApi;
-    if (api != null) {
-      final jsMessage = message.jsify();
-      if (jsMessage.isDefinedAndNotNull) {
-        api.postMessage(jsMessage as JSAny);
-      }
+    if (api == null) throw Error();
+
+    // .toJsMessage is our custom extension to convert
+    final jsMessage = message.toJsMessage();
+
+    if (jsMessage.isDefinedAndNotNull) {
+      api.postMessage(jsMessage);
     }
   }
 }
 
 class Message {
   final String type;
-  final int? value;
+  final int value;
 
-  Message({required this.type, this.value});
+  Message({required this.type, required this.value});
 
   factory Message.fromJsObject(JSObject jsObject) {
     final typeJs = jsObject['type'];
@@ -69,8 +70,17 @@ class Message {
     final type = typeJs.isDefinedAndNotNull ? (typeJs as JSString).toDart : '';
     final value = valueJs.isDefinedAndNotNull
         ? (valueJs as JSNumber).toDartInt
-        : null;
+        : 0;
 
     return Message(type: type, value: value);
+  }
+}
+
+extension JSMessage on Message {
+  JSObject toJsMessage() {
+    final jsObject = JSObject();
+    jsObject.setProperty('type'.toJS, type.toJS);
+    jsObject.setProperty('value'.toJS, value.toJS);
+    return jsObject;
   }
 }

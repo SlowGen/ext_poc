@@ -36,10 +36,10 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     _messageHandler = WebviewMessageHandler();
 
-    // Set up message handlers
+    // Set up message handlers, this is separated in order to isolate the js_interop to one spot
     _messageHandler.setMessageHandler((message) {
-      final messageType = message['type'] as String?;
-      
+      final messageType = message.type;
+
       switch (messageType) {
         case 'add':
           _incrementCounter();
@@ -69,10 +69,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _updateCounterInVsCode() {
-    _messageHandler.sendMessage({
-      'type': 'counterUpdate',
-      'value': _counter
-    });
+    _messageHandler.sendMessage(
+      Message(type: 'updateCounter', value: _counter),
+    );
   }
 
   @override
