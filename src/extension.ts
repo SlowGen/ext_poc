@@ -2,11 +2,6 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 
-// expose the vscode lib so Flutter can see and use it
-// @ts-ignore
-globalThis.vscode = vscode;
-
-
 export function activate(context: vscode.ExtensionContext) {
 
     const provider = new FlutterWebviewProvider(context.extensionUri);
@@ -17,7 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.registerWebviewViewProvider(FlutterWebviewProvider.viewType, provider)
 	);
 
-    // Add the status bar item to subscriptions for proper cleanup
+    // Add the status bar item to subscriptions
     context.subscriptions.push(provider.statusBarItem);
 
     // Register the commands defined in package.json

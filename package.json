@@ -50,7 +50,8 @@
 			{
 				"command": "extPoc.addOne",
 				"category": "Counter Button",
-				"title": "Add One"
+				"title": "Add One",
+				"icon": "$(add)"
 			},
 			{
 				"command": "extPoc.reset",
@@ -61,6 +62,11 @@
 		],
 		"menus": {
 			"view/title": [
+				{
+					"command": "extPoc.addOne",
+					"group": "navigation",
+					"when": "view == extPoc.counter"
+				},
 				{
 					"command": "extPoc.reset",
 					"group": "navigation",

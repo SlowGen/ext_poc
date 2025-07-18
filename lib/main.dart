@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'vscode/vscode_interop.dart';
+import 'vscode_interop.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const MyApp());
 }
 
@@ -11,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter Counter VSCode Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
@@ -31,6 +33,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   late final WebviewMessageHandler _messageHandler;
+
   @override
   void initState() {
     super.initState();
@@ -54,6 +57,12 @@ class _MyHomePageState extends State<MyHomePage> {
     _updateCounterInVsCode();
   }
 
+  @override
+  void dispose() {
+    _messageHandler.dispose();
+    super.dispose();
+  }
+
   void _incrementCounter() {
     setState(() {
       _counter++;
@@ -70,26 +79,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _updateCounterInVsCode() {
     _messageHandler.sendMessage(
-      Message(type: 'updateCounter', value: _counter),
+      Message(type: 'counterUpdate', value: _counter),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(backgroundColor: Colors.white, title: Text(widget.title)),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            Text('$_counter'),
           ],
         ),
       ),

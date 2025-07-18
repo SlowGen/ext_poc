@@ -6,17 +6,8 @@
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="A new Flutter project.">
-  
-  <!-- VSCode webview debugging -->
+
   <script>
-    console.log('Flutter webview starting...');
-    window.addEventListener('error', function(e) {
-      console.error('JavaScript error:', e.error, e.filename, e.lineno);
-    });
-    window.addEventListener('unhandledrejection', function(e) {
-      console.error('Unhandled promise rejection:', e.reason);
-    });
-    
     // Disable history API for webview compatibility
     window.history.replaceState = function() {
       console.log('History replaceState blocked for webview compatibility');
@@ -30,12 +21,6 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
-  <script>
-    console.log('About to load main.dart.js...');
-  </script>
   <script src="main.dart.js" async></script>
-  <script>
-    console.log('main.dart.js loaded.');
-  </script>
 </body>
 </html>
