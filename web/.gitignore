@@ -1,1 +1,2 @@
 *.js
+!flutter_bootstrap.js
