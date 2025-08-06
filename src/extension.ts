@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 export function activate(context: vscode.ExtensionContext) {
+    console.log('Congratulations, your extension "ext-poc" is now active!');
 
     const provider = new FlutterWebviewProvider(context.extensionUri);
 
@@ -35,20 +36,26 @@ class FlutterWebviewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'extPoc.counter';
 
     public view?: vscode.WebviewView;
-    private _statusBarItem: vscode.StatusBarItem;
+    private _statusBarItem?: vscode.StatusBarItem;
 
     constructor(
         private readonly _extensionUri: vscode.Uri,
     ) {
-        // Create status bar item
+        // Status bar item will be created when needed
+    }
+
+    public get statusBarItem(): vscode.StatusBarItem {
+        if (!this._statusBarItem) {
+            this._createStatusBarItem();
+        }
+        return this._statusBarItem!;
+    }
+
+    private _createStatusBarItem(): void {
         this._statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
         this._statusBarItem.text = "$(symbol-number) Counter: 0";
         this._statusBarItem.tooltip = "Flutter Counter Value";
         this._statusBarItem.show();
-    }
-
-    public get statusBarItem(): vscode.StatusBarItem {
-        return this._statusBarItem;
     }
 
     public resolveWebviewView(
@@ -84,11 +91,14 @@ class FlutterWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     private _updateStatusBar(value: number): void {
-        this._statusBarItem.text = `$(symbol-number) Counter: ${value}`;
-        this._statusBarItem.tooltip = `Flutter Counter Value: ${value}`;
+        // The public `statusBarItem` getter is the only way to access this
+        // from outside, and it ensures the item is created.
+        this.statusBarItem.text = `$(symbol-number) Counter: ${value}`;
+        this.statusBarItem.tooltip = `Flutter Counter Value: ${value}`;
     }
 
-    _getHtml(webview: vscode.Webview): string {
+
+    private _getHtml(webview: vscode.Webview): string {
 		const webviewUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "build", "web"));
 
         console.log('webviewUri', webviewUri);

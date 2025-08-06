@@ -13,8 +13,8 @@
 			"args": [
 				"--extensionDevelopmentPath=${workspaceRoot}",
 				"--disable-extensions",
-		],
-			"outFiles": ["${workspaceFolder}/build/web/*.js"],
+				],
+			"outFiles": ["${workspaceFolder}/out/**/*.js"],
 			"preLaunchTask": "npm: vscode:prepublish"
 		}
 	]

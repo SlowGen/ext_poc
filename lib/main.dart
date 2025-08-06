@@ -32,15 +32,19 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-  late final WebviewMessageHandler _messageHandler;
+  WebviewMessageHandler? _messageHandler;
 
   @override
   void initState() {
     super.initState();
-    _messageHandler = WebviewMessageHandler();
+    try {
+      _messageHandler = WebviewMessageHandler();
+    } catch (e) {
+      print('Error initializing message handler: $e');
+    }
 
     // Set up message handlers, this is separated in order to isolate the js_interop to one spot
-    _messageHandler.setMessageHandler((message) {
+    _messageHandler?.setMessageHandler((message) {
       final messageType = message.type;
 
       switch (messageType) {
@@ -59,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void dispose() {
-    _messageHandler.dispose();
+    _messageHandler?.dispose();
     super.dispose();
   }
 
@@ -78,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _updateCounterInVsCode() {
-    _messageHandler.sendMessage(
+    _messageHandler?.sendMessage(
       Message(type: 'counterUpdate', value: _counter),
     );
   }
