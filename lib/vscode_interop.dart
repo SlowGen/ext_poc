@@ -1,6 +1,7 @@
 import 'dart:js_interop';
 import 'package:web/web.dart';
 import 'dart:js_interop_unsafe';
+import 'dart:async';
 
 // this is supplied by vscode in order to securely access their api
 @JS('acquireVsCodeApi')
@@ -17,7 +18,10 @@ class WebviewMessageHandler {
   WebviewMessageHandler() {
     try {
       _vscodeApi = acquireVsCodeApi();
-      _setupMessageListener();
+      // Defer the message listener setup to ensure window is initialized
+      Future.microtask(() {
+        _setupMessageListener();
+      });
     } catch (e) {
       print('missing vscode');
     }
@@ -42,8 +46,17 @@ class WebviewMessageHandler {
 
   void _setupMessageListener() {
     print('setup listener method');
-    window.addEventListener('message', messageHandler.toJS);
-    print('listener method setup');
+    try {
+      // Only attempt to add event listener if window is available
+      if (window.isDefinedAndNotNull) {
+        window.addEventListener('message', messageHandler.toJS);
+        print('listener method setup');
+      } else {
+        print('window is not available yet');
+      }
+    } catch (e) {
+      print('Error setting up message listener: $e');
+    }
   }
 
   void setMessageHandler(Function(Message) handler) {
@@ -51,7 +64,13 @@ class WebviewMessageHandler {
   }
 
   void dispose() {
-    window.removeEventListener('message', messageHandler.toJS);
+    try {
+      if (window.isDefinedAndNotNull) {
+        window.removeEventListener('message', messageHandler.toJS);
+      }
+    } catch (e) {
+      print('Error removing event listener: $e');
+    }
   }
 
   void sendMessage(Message message) {

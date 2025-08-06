@@ -11,6 +11,6 @@
 		"strict": true
 	},
 	"exclude": [
-		"node_modules", "out"
+		"node_modules", "out", "build"
 	]
 }

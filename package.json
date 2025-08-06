@@ -1,7 +1,7 @@
 {
 	"name": "ext_poc",
 	"description": "VSCode extension POC",
-	"version": "0.0.1",
+  "version": "0.0.1",
 	"publisher": "slowgen",
 	"private": true,
 	"license": "MIT",
@@ -9,52 +9,36 @@
 		"type": "git",
 		"url": "https://github.com/SlowGen/ext_poc"
 	},
-	"engines": {
-		"vscode": "^1.75.0"
-	},
-	"extensionKind": [
-		"workspace"
-	],
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-	],
-	"main": "./out/extension.js",
-	"files": [
-		"out",
-		"build/web"
-	],
-	"contributes": {
-		"viewsContainers": {
-			"activitybar": [
-				{
-					"id": "ext-poc-sidebar",
-					"title": "Flutter POC",
-					"icon": "$(flutter)"
-				}
-			]
-		},
-		"views": {
-			"ext-poc-sidebar": [
-				{
-					"type": "webview",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onWebviewView:extPoc.counter"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "views": {
+      "explorer": [
+        {
 					"icon": "web/icons/Icon-192.png",
-					"id": "extPoc.counter",
-					"name": "Flutter Counter"
-				}
-			]
-
-		},
-		"commands": [
-			{
-				"command": "extPoc.addOne",
+          "id": "extPoc.counter",
+          "name": "Flutter Counter",
+          "type": "webview"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "extPoc.addOne",
 				"category": "Counter Button",
 				"title": "Add One",
 				"icon": "$(add)"
-			},
-			{
-				"command": "extPoc.reset",
+      },
+      {
+        "command": "extPoc.reset",
 				"category": "Counter Button",
 				"title": "Reset to zero",
 				"icon": "$(clear-all)"
@@ -71,22 +55,17 @@
 					"command": "extPoc.reset",
 					"group": "navigation",
 					"when": "view == extPoc.counter"
-				}
+      	}
 			]
-		}
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
+  	}
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
 		"compile": "scripts/compile.sh",
 		"watch": "tsc -watch -p ./"
-	},
-	"devDependencies": {
-		"@eslint/js": "^9.13.0",
-		"@stylistic/eslint-plugin": "^2.9.0",
-		"@types/node": "^24.0.14",
-		"@types/vscode": "^1.73.0",
-		"eslint": "^9.13.0",
-		"typescript": "^5.8.2",
-		"typescript-eslint": "^8.26.0"
-	}
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "typescript": "^5.1.3"
+  }
 }
