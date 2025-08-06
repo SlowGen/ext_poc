@@ -75,15 +75,23 @@ class WebviewMessageHandler {
 
   void sendMessage(Message message) {
     final api = _vscodeApi;
-    if (api == null) throw Error();
+    final vscodeApi = api;
+    if (vscodeApi case null) {
+      print('VSCode API is not available, cannot send message');
+      return;
+    }
 
     print('sending message type: ${message.type} value: ${message.value}');
 
-    // .toJsMessage is our custom extension to convert
-    final jsMessage = message.toJsMessage();
+    try {
+      // .toJsMessage is our custom extension to convert
+      final jsMessage = message.toJsMessage();
 
-    if (jsMessage.isDefinedAndNotNull) {
-      api.postMessage(jsMessage);
+      if (jsMessage.isDefinedAndNotNull) {
+        vscodeApi.postMessage(jsMessage);
+      }
+    } catch (e) {
+      print('Error sending message: $e');
     }
   }
 }
